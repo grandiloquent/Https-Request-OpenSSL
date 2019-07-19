@@ -1,5 +1,8 @@
 *.cbp
 *.bat
+*.dll
+*.dll.a
+*.exe
 .idea
 /CMakeFiles
 /cmake-build-debug
