@@ -19,7 +19,7 @@ std::string Request::Touch(const char *host, const char *path, Request::Method m
     auto headers = httplib::Headers();
 
     res = client.Get(path);
-    res->set_header("User-Agent", Request::USER_AGENT);
+    res->set_header("User-Agent", USER_AGENT);
 
   } else if (method == Request::Method::POST) {
     //res = client.Post(host);
@@ -31,7 +31,7 @@ std::string Request::Touch(const char *host, const char *path, Request::Method m
             << std::endl;
 #endif
   if (res) {
-    std::cout << res->status << std::endl;
+    if(res->status==200)
     return res->body;
   }
   std::cout << "res is null" << std::endl;

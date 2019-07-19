@@ -1,0 +1,11 @@
+<snippet>
+	<name>define header</name>
+	<content><![CDATA[
+#ifndef CPPHTTPLIB_${1:${TM_FILENAME/(.+)\..+|.*/\U$1/:name}}_H
+#define CPPHTTPLIB_${1:${TM_FILENAME/(.+)\..+|.*/\U$1/:name}}_H
+${2}
+#endif
+]]></content>
+	<tabTrigger>dh</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>
