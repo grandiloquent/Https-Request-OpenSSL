@@ -1,5 +1,6 @@
 *.cbp
 *.bat
+*.o
 *.dll
 *.dll.a
 *.exe

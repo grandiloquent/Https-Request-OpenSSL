@@ -118,9 +118,24 @@ struct ci
 typedef std::multimap<std::string, std::string, detail::ci> Headers;
 typedef std::function<bool(uint64_t current, uint64_t total)> Progress;
 typedef std::multimap<std::string, std::string> Params;
+typedef std::function<void(const char *data, size_t len)> ContentReceiver;
+typedef std::smatch Match;
+typedef std::function<std::string(uint64_t offset)> ContentProducer;
+
+struct MultipartFile {
+  std::string filename;
+  std::string content_type;
+  size_t offset = 0;
+  size_t length = 0;
+};
+
+typedef std::multimap<std::string, MultipartFile> MultipartFiles;
 
 #include "Stream.h"
 #include "SocketStream.h"
 #include "stream_line_reader.h"
+#include "Response.h"
+#include "Request.h"
+#include "BufferStream.h"
 
 #endif

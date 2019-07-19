@@ -145,6 +145,153 @@ namespace detail
         return result;
     }
 
+   
+
+    inline bool parse_multipart_boundary(const std::string& content_type,
+        std::string& boundary)
+    {
+        auto pos = content_type.find("boundary=");
+        if (pos == std::string::npos)
+        {
+            return false;
+        }
+
+        boundary = content_type.substr(pos + 9);
+        return true;
+    }
+
+    inline bool parse_multipart_formdata(const std::string& boundary,
+        const std::string& body,
+        MultipartFiles& files)
+    {
+        static std::string dash = "--";
+        static std::string crlf = "\r\n";
+
+        static std::regex re_content_type("Content-Type: (.*?)",
+            std::regex_constants::icase);
+
+        static std::regex re_content_disposition(
+            "Content-Disposition: form-data; name=\"(.*?)\"(?:; filename=\"(.*?)\")?",
+            std::regex_constants::icase);
+
+        auto dash_boundary = dash + boundary;
+
+        auto pos = body.find(dash_boundary);
+        if (pos != 0)
+        {
+            return false;
+        }
+
+        pos += dash_boundary.size();
+
+        auto next_pos = body.find(crlf, pos);
+        if (next_pos == std::string::npos)
+        {
+            return false;
+        }
+
+        pos = next_pos + crlf.size();
+
+        while (pos < body.size())
+        {
+            next_pos = body.find(crlf, pos);
+            if (next_pos == std::string::npos)
+            {
+                return false;
+            }
+
+            std::string name;
+            MultipartFile file;
+
+            auto header = body.substr(pos, (next_pos - pos));
+
+            while (pos != next_pos)
+            {
+                std::smatch m;
+                if (std::regex_match(header, m, re_content_type))
+                {
+                    file.content_type = m[1];
+                }
+                else if (std::regex_match(header, m, re_content_disposition))
+                {
+                    name = m[1];
+                    file.filename = m[2];
+                }
+
+                pos = next_pos + crlf.size();
+
+                next_pos = body.find(crlf, pos);
+                if (next_pos == std::string::npos)
+                {
+                    return false;
+                }
+
+                header = body.substr(pos, (next_pos - pos));
+            }
+
+            pos = next_pos + crlf.size();
+
+            next_pos = body.find(crlf + dash_boundary, pos);
+
+            if (next_pos == std::string::npos)
+            {
+                return false;
+            }
+
+            file.offset = pos;
+            file.length = next_pos - pos;
+
+            pos = next_pos + crlf.size() + dash_boundary.size();
+
+            next_pos = body.find(crlf, pos);
+            if (next_pos == std::string::npos)
+            {
+                return false;
+            }
+
+            files.emplace(name, file);
+
+            pos = next_pos + crlf.size();
+        }
+
+        return true;
+    }
+
+    inline std::string to_lower(const char* beg, const char* end)
+    {
+        std::string out;
+        auto it = beg;
+        while (it != end)
+        {
+            out += ::tolower(*it);
+            it++;
+        }
+        return out;
+    }
+
+    inline void make_range_header_core(std::string&) {}
+
+    template <typename uint64_t>
+    inline void make_range_header_core(std::string& field, uint64_t value)
+    {
+        if (!field.empty())
+        {
+            field += ", ";
+        }
+        field += std::to_string(value) + "-";
+    }
+
+    template <typename uint64_t, typename... Args>
+    inline void make_range_header_core(std::string& field, uint64_t value1,
+        uint64_t value2, Args... args)
+    {
+        if (!field.empty())
+        {
+            field += ", ";
+        }
+        field += std::to_string(value1) + "-" + std::to_string(value2);
+        make_range_header_core(field, args...);
+    }
     inline std::string encode_url(const std::string& s)
     {
         std::string result;
@@ -839,6 +986,76 @@ namespace detail
             strm.write_format("%s: %s\r\n", x.first.c_str(), x.second.c_str());
         }
         strm.write("\r\n");
+    }
+
+     template <typename T, typename U>
+    bool read_content(Stream& strm, T& x, uint64_t payload_max_length, int& status,
+        Progress progress, U callback)
+    {
+
+        ContentReceiver out = [&](const char* buf, size_t n) { callback(buf, n); };
+
+#ifdef CPPHTTPLIB_ZLIB_SUPPORT
+        detail::decompressor decompressor;
+
+        if (!decompressor.is_valid())
+        {
+            status = 500;
+            return false;
+        }
+
+        if (x.get_header_value("Content-Encoding") == "gzip")
+        {
+            out = [&](const char* buf, size_t n) {
+                decompressor.decompress(
+                    buf, n, [&](const char* buf, size_t n) { callback(buf, n); });
+            };
+        }
+#else
+        if (x.get_header_value("Content-Encoding") == "gzip")
+        {
+            status = 415;
+            return false;
+        }
+#endif
+
+        auto ret = true;
+        auto exceed_payload_max_length = false;
+
+        if (is_chunked_transfer_encoding(x.headers))
+        {
+            ret = read_content_chunked(strm, out);
+        }
+        else if (!has_header(x.headers, "Content-Length"))
+        {
+            ret = read_content_without_length(strm, out);
+        }
+        else
+        {
+            auto len = get_header_value_uint64(x.headers, "Content-Length", 0);
+            if (len > 0)
+            {
+                if ((len > payload_max_length) ||
+                    // For 32-bit platform
+                    (sizeof(size_t) < sizeof(uint64_t) && len > std::numeric_limits<size_t>::max()))
+                {
+                    exceed_payload_max_length = true;
+                    skip_content_with_length(strm, len);
+                    ret = false;
+                }
+                else
+                {
+                    ret = read_content_with_length(strm, len, progress, out);
+                }
+            }
+        }
+
+        if (!ret)
+        {
+            status = exceed_payload_max_length ? 413 : 400;
+        }
+
+        return ret;
     }
 }
 }
