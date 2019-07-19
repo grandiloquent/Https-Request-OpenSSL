@@ -4,6 +4,7 @@
 *.dll.a
 *.exe
 .idea
+/bin
 /CMakeFiles
 /cmake-build-debug
 /CMakeCache.txt
