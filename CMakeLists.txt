@@ -16,7 +16,7 @@ endif ()
 
 
 add_library(Request SHARED Request.cpp)
-target_compile_definitions(Request PRIVATE "CPPHTTPLIB_OPENSSL_SUPPORT")
+target_compile_definitions(Request PRIVATE "CPPHTTPLIB_OPENSSL_SUPPORT" "DEBUG")
 if (WIN32)
     target_link_libraries(Request ws2_32 ssl crypto)
 else ()

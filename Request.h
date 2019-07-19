@@ -15,6 +15,10 @@ class Request {
   Request();
   ~Request();
   std::string Touch(const char *host, const char *path, Method method) const;
+ private:
+  const static char *USER_AGENT;
+  const static int TIMEOUT = 1000 * 5;
+
 };
 
 #endif //HTTP__REQUEST_H_
