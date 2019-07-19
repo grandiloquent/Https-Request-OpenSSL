@@ -13,18 +13,18 @@ Request::~Request() {
 std::string Request::Touch(const char *host, const char *path, Request::Method method) const {
   std::shared_ptr<httplib::Response> res{0};
 
-  httplib::Client client(host, 443, TIMEOUT);
+  httplib::SSLClient client(host, 443, TIMEOUT);
 
   if (method == Request::Method::GET) {
     auto headers = httplib::Headers();
 
-    res = client.Get(host);
+    res = client.Get(path);
     res->set_header("User-Agent", Request::USER_AGENT);
 
   } else if (method == Request::Method::POST) {
     //res = client.Post(host);
   }
-#ifndef DEBUG
+#ifdef DEBUG
   std::cout << method
             << " " << host
             << " " << path
