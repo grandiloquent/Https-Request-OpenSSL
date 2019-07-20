@@ -3,8 +3,6 @@
 #include "Request.h"
 #include "httplib.h"
 
-const char* Request::PC_USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.56 Safari/537.36";
-
 Request::Request()
 {
 }
@@ -13,7 +11,7 @@ Request::~Request()
 {
 }
 std::string Request::Touch(const char* host, const char* path,
-    const char* referer,
+    std::unordered_map<const char*, const char*> headers,
     bool https, bool mobile, Request::Method method) const
 {
 
@@ -30,24 +28,16 @@ std::string Request::Touch(const char* host, const char* path,
     }
     if (method == Request::Method::GET)
     {
-        std::cout << "GET" << std::endl;
         res = client->Get(path);
     }
     else if (method == Request::Method::POST)
     {
         //res = client.Post(host);
     }
-    if (mobile)
+
+    for (std::unordered_map<const char*, const char*>::iterator i = headers.begin(), end = headers.end(); i != end; ++i)
     {
-        res->set_header("User-Agent", PC_USER_AGENT);
-    }
-    else
-    {
-        res->set_header("User-Agent", PC_USER_AGENT);
-    }
-    if (referer)
-    {
-        res->set_header("Referer", referer);
+        res->set_header(i->first, i->second);
     }
 
 #ifdef DEBUG
@@ -64,4 +54,29 @@ std::string Request::Touch(const char* host, const char* path,
         }
     }
     return std::string();
+}
+
+bool Request::Ok(const char* host, const char* path, bool https) const
+{
+
+    httplib::Client* client;
+
+    std::shared_ptr<httplib::Response> res{ 0 };
+    if (https)
+    {
+        client = new httplib::SSLClient(host, 443, TIMEOUT);
+    }
+    else
+    {
+        client = new httplib::Client(host, 80, TIMEOUT);
+    }
+    res = client->Get(path);
+    if (res)
+    {
+        if (res->status == 200)
+        {
+            return true;
+        }
+    }
+    return false;
 }

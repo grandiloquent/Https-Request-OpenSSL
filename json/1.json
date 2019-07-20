@@ -1,0 +1,118 @@
+{
+    "code": 0,
+    "data": [
+    {
+        "action":
+        {
+            "alert": 2,
+            "icons": 139132,
+            "msgdown": 0,
+            "msgfav": 0,
+            "msgid": 14,
+            "msgpay": 6,
+            "msgshare": 0,
+            "switch": 17413891
+        },
+        "album":
+        {
+            "id": 14880,
+            "mid": "0024RXz94OSKCa",
+            "name": "刀郎Ⅲ",
+            "subtitle": "",
+            "time_public": "2006-09-21",
+            "title": "刀郎Ⅲ"
+        },
+        "bpm": 75,
+        "data_type": 0,
+        "file":
+        {
+            "b_30s": 0,
+            "e_30s": 0,
+            "hires_bitdepth": 0,
+            "hires_sample": 0,
+            "media_mid": "002qJ8qj3iNQxG",
+            "size_128mp3": 5493013,
+            "size_192aac": 8271802,
+            "size_192ogg": 8056043,
+            "size_24aac": 1060132,
+            "size_320mp3": 13732243,
+            "size_48aac": 2078805,
+            "size_96aac": 4159380,
+            "size_ape": 0,
+            "size_dts": 0,
+            "size_flac": 0,
+            "size_hires": 0,
+            "size_try": 0,
+            "try_begin": 104992,
+            "try_end": 151179,
+            "url": ""
+        },
+        "fnote": 4009,
+        "genre": 1,
+        "id": 169241,
+        "index_album": 2,
+        "index_cd": 0,
+        "interval": 343,
+        "isonly": 1,
+        "ksong":
+        {
+            "id": 5645040,
+            "mid": "003CY4s93K6olM"
+        },
+        "label": "4611686153718857729",
+        "language": 0,
+        "mid": "003IjD3G3xCgJv",
+        "modify_stamp": 0,
+        "mv":
+        {
+            "id": 335337,
+            "name": "",
+            "title": "",
+            "vid": "h0016nxsp3i"
+        },
+        "name": "西海情歌",
+        "pay":
+        {
+            "pay_down": 1,
+            "pay_month": 1,
+            "pay_play": 0,
+            "pay_status": 0,
+            "price_album": 0,
+            "price_track": 200,
+            "time_free": 0
+        },
+        "singer": [
+        {
+            "id": 244,
+            "mid": "000iZroE1VWLJG",
+            "name": "刀郎",
+            "title": "刀郎",
+            "type": 0,
+            "uin": 0
+        }],
+        "status": 0,
+        "subtitle": "",
+        "time_public": "2006-09-21",
+        "title": "西海情歌",
+        "trace": "",
+        "type": 0,
+        "url": "http://stream4.qqmusic.qq.com/12169241.wma",
+        "version": 0,
+        "volume":
+        {
+            "gain": -5.1380,
+            "lra": 7.9240,
+            "peak": 0.8560
+        }
+    }],
+    "url":
+    {
+        "169241": "ws.stream.qqmusic.qq.com/C100003IjD3G3xCgJv.m4a?fromtag=38"
+    },
+    "url1":
+    {},
+    "extra_data": [],
+    "joox": 0,
+    "joox_login": 0,
+    "msgid": 0
+}

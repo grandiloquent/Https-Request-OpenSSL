@@ -9,6 +9,8 @@
 #endif
 
 #include <string>
+#include <unordered_map>
+
 class Request
 {
 public:
@@ -20,11 +22,11 @@ public:
     Request();
     ~Request();
     std::string Touch(const char* host, const char* path,
-        const char* referer,
+        std::unordered_map<const char*, const char*> headers,
         bool https, bool mobile, Request::Method method) const;
+    bool Ok(const char* host, const char* path, bool https) const;
 
 private:
-    const static char* PC_USER_AGENT;
     const static int TIMEOUT = 1000 * 5;
 };
 
