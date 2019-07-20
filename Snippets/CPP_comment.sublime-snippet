@@ -1,0 +1,10 @@
+<snippet>
+	<name>define header</name>
+	<content><![CDATA[
+/*================================
+${1}
+================================*/
+]]></content>
+	<tabTrigger>dh</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>

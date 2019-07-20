@@ -10,6 +10,16 @@ int StringEquals(const char* s1, const char* s2)
             return 1;
     return 0;
 }
+int IsDigit(const char* s)
+{
+    if (s != 0)
+    {
+        while (*s >= '0' && *s <= '9')
+            if (*++s == 0)
+                return 1;
+    }
+    return 0;
+}
 inline bool EndsWith(const char* s1, const char* s2)
 {
     size_t s1_length = strlen(s1);
@@ -53,6 +63,38 @@ char* StringCopy(char* to, const char* from)
     for (; (*to = *from) != '\0'; ++from, ++to)
         ;
     return (save);
+}
+
+std::string FindObj(std::string s1, const char* s2)
+{
+
+    auto idx = s1.find(s2);
+    if (idx == -1)
+        return "";
+
+    auto len = idx + strlen(s2);
+    if (len == s1.length())
+        return "";
+
+    auto start = s1.find("\"", len);
+
+    if (start == s1.length())
+        return "";
+    start++;
+
+    auto end = s1.find("\"", start);
+    if (end == -1)
+        return "";
+
+    while (end - 1 >= 0 && s1.at(end - 1) == '\\')
+    {
+
+        end = s1.find("\"", end + 1);
+    }
+
+    if (end > start)
+        return s1.substr(start, end - start);
+    return "";
 }
 char* StringString(const char* s, const char* find)
 {

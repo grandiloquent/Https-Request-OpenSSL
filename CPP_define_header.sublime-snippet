@@ -1,11 +1,11 @@
 <snippet>
-	<name>define header</name>
+	<name>comment</name>
 	<content><![CDATA[
-#ifndef CPPHTTPLIB_${1:${TM_FILENAME/(.+)\..+|.*/\U$1/:name}}_H
-#define CPPHTTPLIB_${1:${TM_FILENAME/(.+)\..+|.*/\U$1/:name}}_H
-${2}
-#endif
+    /* ================================
+	 * $1
+     * ================================
+     */
 ]]></content>
-	<tabTrigger>dh</tabTrigger>
+	<tabTrigger>line</tabTrigger>
 	<scope>source.c++</scope>
 </snippet>

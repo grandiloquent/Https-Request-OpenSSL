@@ -9,16 +9,23 @@
 #endif
 
 #include <string>
-class Request {
- public:
-  enum Method { GET, POST };
-  Request();
-  ~Request();
-  std::string Touch(const char *host, const char *path, Method method) const;
- private:
-  const static char *USER_AGENT;
-  const static int TIMEOUT = 1000 * 5;
+class Request
+{
+public:
+    enum Method
+    {
+        GET,
+        POST
+    };
+    Request();
+    ~Request();
+    std::string Touch(const char* host, const char* path,
+        const char* referer,
+        bool https, bool mobile, Request::Method method) const;
 
+private:
+    const static char* PC_USER_AGENT;
+    const static int TIMEOUT = 1000 * 5;
 };
 
 #endif //HTTP__REQUEST_H_
